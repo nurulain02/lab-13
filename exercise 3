@@ -1,0 +1,42 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Server {
+    private ServerSocket serverSocket;
+    private Socket clientSocket;
+    private PrintWriter out;
+    private BufferedReader in;
+
+    public void start(int port) throws IOException {
+        serverSocket = new ServerSocket(port);
+        System.out.println("Server started. Waiting for connections...");
+
+        clientSocket = serverSocket.accept();
+        System.out.println("Client connected.");
+
+        out = new PrintWriter(clientSocket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+        processText();
+
+        in.close();
+        out.close();
+        clientSocket.close();
+        serverSocket.close();
+    }
+
+    private void processText() throws IOException {
+        String text = in.readLine();
+        int wordCount = TextProcessor.countWords(text);
+        out.println(wordCount);
+    }
+
+    public static void main(String[] args) throws IOException {
+        Server server = new Server();
+        server.start(9999);
+    }
+}
