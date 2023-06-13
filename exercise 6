@@ -1,0 +1,38 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+public class Client {
+    private Socket socket;
+    private PrintWriter out;
+    private BufferedReader in;
+
+    public void connect(String serverAddress, int serverPort) throws IOException {
+        socket = new Socket(serverAddress, serverPort);
+        out = new PrintWriter(socket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    }
+
+    public String sendRequest(String text, String targetLanguage) throws IOException {
+        out.println(text);
+        out.println(targetLanguage);
+        return in.readLine();
+    }
+
+    public void close() throws IOException {
+        in.close();
+        out.close();
+        socket.close();
+    }
+
+    public static void main(String[] args) throws IOException {
+        Client client = new Client();
+        client.connect("localhost", 9999);
+        
+        // Example requests
+        String text1 = "Good morning";
+        String targetLanguage1 = "Bahasa Malaysia";
+        String translation1 = client.sendRequest(text1, targetLanguage1);
+        System.out.println("Translation 1
